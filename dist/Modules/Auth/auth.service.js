@@ -1,11 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const error_res_1 = require("../../Utils/Responsive/error.res");
 class AuthentcationService {
     constructor() { }
-    signup = (req, res, next) => {
-        throw new error_res_1.NotFoundException("notfound", { cause: "anything" });
-        res.status(201).json({ message: "sign" });
+    signup = async (req, res) => {
+        const { username, email, password, confirmPassword } = req.body;
+        console.log({ username, email, password, confirmPassword });
+        res.status(201).json({ message: "signUp is sucssefuly" });
+    };
+    login = async (req, res) => {
+        const { email, password } = req.body;
+        console.log({ email, password });
+        res.status(201).json({ message: "login is sucssefuly" });
     };
 }
 exports.default = new AuthentcationService();

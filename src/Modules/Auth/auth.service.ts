@@ -15,7 +15,7 @@ class AuthentcationService {
     const { email, password }: ILoginUpDTO = req.body;
     console.log({ email, password });
 
-    res.status(201).json({ message: "signUp is sucssefuly" });
+    res.status(201).json({ message: "login is sucssefuly" });
   };
 }
 

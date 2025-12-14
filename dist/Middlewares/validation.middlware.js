@@ -33,35 +33,41 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signUpSchema = exports.loginSchema = void 0;
+exports.generaFeild = exports.validation = void 0;
 const z = __importStar(require("zod"));
-const validation_middlware_1 = require("../../Middlewares/validation.middlware");
-exports.loginSchema = {
-    body: z.strictObject({
-        email: validation_middlware_1.generaFeild.email,
-        password: validation_middlware_1.generaFeild.password,
-    }),
+const error_res_1 = require("../Utils/Responsive/error.res");
+const validation = (schema) => {
+    return (req, res, next) => {
+        const validtaionErrors = [];
+        for (const key of Object.keys(schema)) {
+            if (!schema[key])
+                continue;
+            const validationResults = schema[key].safeParse(req[key]);
+            if (!validationResults.success) {
+                const errors = validationResults.error;
+                validtaionErrors.push({
+                    key,
+                    issues: errors.issues.map((issue) => {
+                        return { message: issue.message, path: issue.path };
+                    }),
+                });
+            }
+            if (validtaionErrors.length > 0) {
+                throw new error_res_1.BadRequestException("Validation Error", {
+                    cause: validtaionErrors,
+                });
+            }
+        }
+        return next();
+    };
 };
-exports.signUpSchema = {
-    body: exports.loginSchema.body
-        .extend({
-        username: validation_middlware_1.generaFeild.username,
-        confirmPassword: validation_middlware_1.generaFeild.confirmPassword,
-    })
-        .superRefine((data, ctx) => {
-        if (data.password !== data.confirmPassword) {
-            ctx.addIssue({
-                code: "custom",
-                path: ["confirmPassword"],
-                message: "Password Missmatch",
-            });
-        }
-        if (data.username?.split(" ").length != 2) {
-            ctx.addIssue({
-                code: "custom",
-                path: ["username"],
-                message: "Username must be 2 words",
-            });
-        }
-    }),
+exports.validation = validation;
+exports.generaFeild = {
+    username: z
+        .string()
+        .min(3, { error: "Username must be at leasat 3 cahracter long" })
+        .max(30, { error: "Username must be at leasat 30 cahracter long" }),
+    email: z.email(),
+    password: z.string(),
+    confirmPassword: z.string(),
 };
