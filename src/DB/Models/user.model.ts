@@ -1,4 +1,4 @@
-import { model, models, Schema } from "mongoose";
+import { HydratedDocument, model, models, Schema } from "mongoose";
 
 export enum GenderEnum {
   MALE = "MALE",
@@ -13,11 +13,12 @@ export interface IUser {
 
   firstName: string;
   lastName: string;
-  userName: string;
+  username: string;
 
   email: string;
   confirmEmailOTP?: string;
   confirmedAt?: Date;
+  confirmEmailOTPExpiresAt?: Date;
 
   password: string;
   resetPasswordOTP?: string;
@@ -46,15 +47,6 @@ export const userSchema = new Schema<IUser>(
       required: [true, "Last name is required"],
       trim: true,
       minlength: [2, "Last name must be at least 2 characters"],
-    },
-
-    userName: {
-      type: String,
-      required: [true, "Username is required"],
-      unique: true,
-      lowercase: true,
-      trim: true,
-      minlength: [3, "Username must be at least 3 characters"],
     },
 
     email: {
@@ -109,6 +101,9 @@ export const userSchema = new Schema<IUser>(
     confirmEmailOTP: {
       type: String,
     },
+    confirmEmailOTPExpiresAt: {
+      type: Date,
+    },
 
     resetPasswordOTP: {
       type: String,
@@ -128,11 +123,12 @@ export const userSchema = new Schema<IUser>(
 userSchema
   .virtual("username")
   .set(function (value) {
-    const [firstName, lastname] = value.split(" ") || [];
-    this.set({ firstName, lastname });
+    const [firstName, lastName] = value.split(" ") || [];
+    this.set({ firstName, lastName });
   })
   .get(function () {
     return `${this.firstName} ${this.lastName}`;
   });
 
 export const userModel = models.user || model("User", userSchema);
+export type HUserDoc = HydratedDocument<IUser>;

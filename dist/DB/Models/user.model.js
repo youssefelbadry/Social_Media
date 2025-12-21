@@ -25,14 +25,6 @@ exports.userSchema = new mongoose_1.Schema({
         trim: true,
         minlength: [2, "Last name must be at least 2 characters"],
     },
-    userName: {
-        type: String,
-        required: [true, "Username is required"],
-        unique: true,
-        lowercase: true,
-        trim: true,
-        minlength: [3, "Username must be at least 3 characters"],
-    },
     email: {
         type: String,
         required: [true, "Email is required"],
@@ -79,6 +71,9 @@ exports.userSchema = new mongoose_1.Schema({
     confirmEmailOTP: {
         type: String,
     },
+    confirmEmailOTPExpiresAt: {
+        type: Date,
+    },
     resetPasswordOTP: {
         type: String,
     },
@@ -93,8 +88,8 @@ exports.userSchema = new mongoose_1.Schema({
 exports.userSchema
     .virtual("username")
     .set(function (value) {
-    const [firstName, lastname] = value.split(" ") || [];
-    this.set({ firstName, lastname });
+    const [firstName, lastName] = value.split(" ") || [];
+    this.set({ firstName, lastName });
 })
     .get(function () {
     return `${this.firstName} ${this.lastName}`;

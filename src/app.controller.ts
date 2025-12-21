@@ -28,7 +28,6 @@ const bootstrab = async () => {
 
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/users", userRouter);
-  // app.use("/api/v1/auth" , authRouter)
 
   app.use("{/dummy}", (req: Request, res: Response) => {
     res.status(404).json({ message: "not founded" });

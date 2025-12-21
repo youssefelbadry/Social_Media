@@ -29,6 +29,18 @@ export class ConflictException extends ApplicationException {
     super(message, 409, options);
   }
 }
+export class UnauthorizedException extends ApplicationException {
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, 401, options);
+  }
+}
+
+export class ForbiddenException extends ApplicationException {
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, 403, options);
+  }
+}
+
 export const globalErrorHandling = (
   err: IError,
   req: Request,

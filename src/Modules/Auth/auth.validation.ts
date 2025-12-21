@@ -11,6 +11,8 @@ export const signUpSchema = {
     .extend({
       username: generaFeild.username,
       confirmPassword: generaFeild.confirmPassword,
+      gender: generaFeild.gender,
+      phone: generaFeild.phone,
     })
     .superRefine((data, ctx) => {
       if (data.password !== data.confirmPassword) {
@@ -28,4 +30,17 @@ export const signUpSchema = {
         });
       }
     }),
+};
+
+export const confirmEmailSchema = {
+  body: z.strictObject({
+    email: generaFeild.email,
+    otp: generaFeild.otp,
+  }),
+};
+
+export const requestOtpSchema = {
+  body: z.strictObject({
+    email: generaFeild.email,
+  }),
 };

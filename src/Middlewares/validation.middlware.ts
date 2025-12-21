@@ -42,4 +42,7 @@ export const generaFeild = {
   email: z.email(),
   password: z.string(),
   confirmPassword: z.string(),
+  gender: z.string(),
+  phone: z.string(),
+  otp: z.string(),
 };

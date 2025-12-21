@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.signUpSchema = exports.loginSchema = void 0;
+exports.requestOtpSchema = exports.confirmEmailSchema = exports.signUpSchema = exports.loginSchema = void 0;
 const z = __importStar(require("zod"));
 const validation_middlware_1 = require("../../Middlewares/validation.middlware");
 exports.loginSchema = {
@@ -47,6 +47,8 @@ exports.signUpSchema = {
         .extend({
         username: validation_middlware_1.generaFeild.username,
         confirmPassword: validation_middlware_1.generaFeild.confirmPassword,
+        gender: validation_middlware_1.generaFeild.gender,
+        phone: validation_middlware_1.generaFeild.phone,
     })
         .superRefine((data, ctx) => {
         if (data.password !== data.confirmPassword) {
@@ -63,5 +65,16 @@ exports.signUpSchema = {
                 message: "Username must be 2 words",
             });
         }
+    }),
+};
+exports.confirmEmailSchema = {
+    body: z.strictObject({
+        email: validation_middlware_1.generaFeild.email,
+        otp: validation_middlware_1.generaFeild.otp,
+    }),
+};
+exports.requestOtpSchema = {
+    body: z.strictObject({
+        email: validation_middlware_1.generaFeild.email,
     }),
 };
