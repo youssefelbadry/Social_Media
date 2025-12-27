@@ -5,11 +5,11 @@ import {
   BadRequestException,
   ForbiddenException,
 } from "../Utils/Responsive/error.res";
-import { tokenModel } from "../DB/Models/token.model";
-import { TokenRepository } from "../DB/Repository/db.repository";
+import { TokenModel } from "../DB/Models/token.model";
+import { TokenRepository } from "../DB/Repository/token.repository";
 
 export class AuthenticationMiddleware {
-  private _tokenRepo = new TokenRepository(tokenModel);
+  private _tokenRepo = new TokenRepository(TokenModel);
   constructor() {}
 
   authenticate(
@@ -26,7 +26,13 @@ export class AuthenticationMiddleware {
         tokenType
       );
 
-      const isRevoked = await this._tokenRepo.findByJwtId(decoded.jti);
+      if (!decoded.jti) {
+        throw new BadRequestException("Invalid token: missing jti claim");
+      }
+
+      const isRevoked = await this._tokenRepo.findOne({
+        filter: { jti: decoded.jti as string },
+      });
 
       if (isRevoked) {
         throw new ForbiddenException("Token revoked");

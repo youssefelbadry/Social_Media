@@ -6,11 +6,11 @@ const error_res_1 = require("../../Utils/Responsive/error.res");
 const user_repository_1 = require("../../DB/Repository/user.repository");
 const generateOtp_1 = require("../../Utils/Security/generateOtp");
 const hash_1 = require("../../Utils/Security/hash");
-const db_repository_1 = require("../../DB/Repository/db.repository");
+const token_repository_1 = require("../../DB/Repository/token.repository");
 const token_model_1 = require("../../DB/Models/token.model");
 class AuthentcationService {
     _userModel = new user_repository_1.userRepository(user_model_1.userModel);
-    _tokenModel = new db_repository_1.TokenRepository(token_model_1.tokenModel);
+    _tokenModel = new token_repository_1.TokenRepository(token_model_1.TokenModel);
     constructor() { }
     signup = async (req, res) => {
         const { username, email, password, gender, phone } = req.body;
@@ -109,15 +109,26 @@ class AuthentcationService {
         res.status(200).json({ message: "Login successful", Credentials });
     };
     logout = async (req, res) => {
-        await this._tokenModel.createTokenOut({
-            data: [
-                {
-                    jwtid: req.decoded?.jti,
-                    userId: String(req.user?._id),
-                },
-            ],
+        const { flag } = req.body;
+        let statusCode = 200;
+        const update = {};
+        switch (flag) {
+            case token_1.FlagEnum.ONLY:
+                await (0, token_1.createRevokeToken)(req.decoded);
+                statusCode = 201;
+                break;
+            case token_1.FlagEnum.ALL:
+                update.changeCredientialTime = new Date();
+            default:
+                break;
+        }
+        await this._userModel.updateOne({
+            filter: {
+                _id: req.decoded?._id,
+            },
+            update,
         });
-        res.status(200).json({ message: "Logout successful" });
+        return res.status(statusCode).json({ message: "Done" });
     };
     refreshToken = async (req, res) => {
         if (!req.user)

@@ -71,37 +71,3 @@ export abstract class DataBaseRepository<TModel> {
     );
   }
 }
-export class TokenRepository extends DataBaseRepository<IToken> {
-  constructor(protected override readonly model: Model<IToken>) {
-    super(model);
-  }
-
-  async createTokenOut({
-    data,
-    options,
-  }: {
-    data: Partial<IToken>[];
-    options?: CreateOptions;
-  }): Promise<IToken[]> {
-    return await this.model.create(data as any, options);
-  }
-  async findByJwtId(jwtid: any) {
-    return await this.model.findOne({ jwtid });
-  }
-
-  async findTokenById({
-    jwtid,
-    select,
-    options,
-  }: {
-    jwtid?: any;
-    select?: ProjectionType<IToken> | null;
-    options?: QueryOptions<IToken> | null;
-  }) {
-    const doc = this.model.findById(jwtid).select(select || "");
-    if (options?.populate) {
-      doc.populate(options.populate as PopulateOptions[]);
-    }
-    return await doc.exec();
-  }
-}

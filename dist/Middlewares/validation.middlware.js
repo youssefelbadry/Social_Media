@@ -36,6 +36,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generaFeild = exports.validation = void 0;
 const z = __importStar(require("zod"));
 const error_res_1 = require("../Utils/Responsive/error.res");
+const token_1 = require("../Utils/Security/token");
 const validation = (schema) => {
     return (req, res, next) => {
         const validtaionErrors = [];
@@ -73,4 +74,5 @@ exports.generaFeild = {
     gender: z.string(),
     phone: z.string(),
     otp: z.string(),
+    flag: z.enum(token_1.FlagEnum).default(token_1.FlagEnum.ONLY),
 };

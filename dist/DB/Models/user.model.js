@@ -80,6 +80,9 @@ exports.userSchema = new mongoose_1.Schema({
     confirmedAt: {
         type: Date,
     },
+    changeCredientialTime: {
+        type: Date,
+    },
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { ZodError, ZodType } from "zod";
 import * as z from "zod";
 import { BadRequestException } from "../Utils/Responsive/error.res";
+import { FlagEnum } from "../Utils/Security/token";
 type keyReqType = keyof Request;
 type SchemaType = Partial<Record<keyReqType, ZodType>>;
 export const validation = (schema: SchemaType) => {
@@ -45,4 +46,5 @@ export const generaFeild = {
   gender: z.string(),
   phone: z.string(),
   otp: z.string(),
+  flag: z.enum(FlagEnum).default(FlagEnum.ONLY),
 };

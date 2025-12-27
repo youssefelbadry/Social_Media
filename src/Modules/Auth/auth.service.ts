@@ -1,9 +1,19 @@
-import { createLoginCredentials } from "./../../Utils/Security/token";
-import { GenderEnum, userModel } from "./../../DB/Models/user.model";
+import { JwtPayload } from "jsonwebtoken";
+import {
+  createLoginCredentials,
+  createRevokeToken,
+  FlagEnum,
+} from "./../../Utils/Security/token";
+import { GenderEnum, IUser, userModel } from "./../../DB/Models/user.model";
 import { Request, Response } from "express";
-import { Types } from "mongoose";
+import { Types, UpdateQuery } from "mongoose";
 
-import { IConfirmEmailDTO, ILoginUpDTO, ISignUpDTO } from "./auth.dto";
+import {
+  IConfirmEmailDTO,
+  ILoginUpDTO,
+  IlogoutDTO,
+  ISignUpDTO,
+} from "./auth.dto";
 import {
   BadRequestException,
   ConflictException,
@@ -12,12 +22,12 @@ import {
 import { userRepository } from "../../DB/Repository/user.repository";
 import { emailService, Otp } from "../../Utils/Security/generateOtp";
 import { compareHash, generateHash } from "../../Utils/Security/hash";
-import { TokenRepository } from "../../DB/Repository/db.repository";
-import { tokenModel } from "../../DB/Models/token.model";
+import { TokenRepository } from "../../DB/Repository/token.repository";
+import { TokenModel } from "../../DB/Models/token.model";
 
 class AuthentcationService {
   private _userModel = new userRepository(userModel);
-  private _tokenModel = new TokenRepository(tokenModel);
+  private _tokenModel = new TokenRepository(TokenModel);
   constructor() {}
 
   //SIGNUP=========================================================
@@ -142,17 +152,30 @@ class AuthentcationService {
   };
 
   logout = async (req: Request, res: Response) => {
-    await this._tokenModel.createTokenOut({
-      data: [
-        {
-          jwtid: req.decoded?.jti,
-          // expiresAt: new Date(req.decoded?.exp * 1000),
-          userId: String(req.user?._id),
-        },
-      ],
+    const { flag }: IlogoutDTO = req.body;
+    let statusCode = 200;
+    const update: UpdateQuery<IUser> = {};
+
+    switch (flag) {
+      case FlagEnum.ONLY:
+        await createRevokeToken(req.decoded as JwtPayload);
+        statusCode = 201;
+
+        break;
+      case FlagEnum.ALL:
+        update.changeCredientialTime = new Date();
+
+      default:
+        break;
+    }
+    await this._userModel.updateOne({
+      filter: {
+        _id: req.decoded?._id as string,
+      },
+      update,
     });
 
-    res.status(200).json({ message: "Logout successful" });
+    return res.status(statusCode).json({ message: "Done" });
   };
 
   refreshToken = async (req: Request, res: Response) => {

@@ -4,9 +4,9 @@ exports.AuthenticationMiddleware = void 0;
 const token_1 = require("../Utils/Security/token");
 const error_res_1 = require("../Utils/Responsive/error.res");
 const token_model_1 = require("../DB/Models/token.model");
-const db_repository_1 = require("../DB/Repository/db.repository");
+const token_repository_1 = require("../DB/Repository/token.repository");
 class AuthenticationMiddleware {
-    _tokenRepo = new db_repository_1.TokenRepository(token_model_1.tokenModel);
+    _tokenRepo = new token_repository_1.TokenRepository(token_model_1.TokenModel);
     constructor() { }
     authenticate(tokenType = token_1.TokenTypeEnum.ACCESS, accessRole = []) {
         return async (req, res, next) => {
@@ -14,7 +14,12 @@ class AuthenticationMiddleware {
                 throw new error_res_1.BadRequestException("Missing authorization header");
             }
             const { user, decoded } = await (0, token_1.decodedToken)(req.headers.authorization, tokenType);
-            const isRevoked = await this._tokenRepo.findByJwtId(decoded.jti);
+            if (!decoded.jti) {
+                throw new error_res_1.BadRequestException("Invalid token: missing jti claim");
+            }
+            const isRevoked = await this._tokenRepo.findOne({
+                filter: { jti: decoded.jti },
+            });
             if (isRevoked) {
                 throw new error_res_1.ForbiddenException("Token revoked");
             }

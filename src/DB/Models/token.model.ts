@@ -1,21 +1,20 @@
 import { HydratedDocument, model, models, Schema } from "mongoose";
 
 export interface IToken {
-  _id: string;
-  jwtid: string | undefined;
+  jti: string;
   userId: Schema.Types.ObjectId | string;
-  expiresAt?: Date | number;
+  expiresIn?: number;
   createdAt: Date;
   updatedAt?: Date;
 }
 
 export const tokenSchema = new Schema<IToken>(
   {
-    jwtid: {
-      type: String || undefined,
+    jti: {
+      type: String,
     },
-    expiresAt: {
-      type: Date || Number,
+    expiresIn: {
+      type: Number,
     },
     userId: {
       type: Schema.Types.ObjectId || String,
@@ -28,5 +27,5 @@ export const tokenSchema = new Schema<IToken>(
   }
 );
 
-export const tokenModel = models.Token || model("Token", tokenSchema);
+export const TokenModel = models.Token || model("Token", tokenSchema);
 export type HTokenDoc = HydratedDocument<IToken>;

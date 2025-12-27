@@ -1,12 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.decodedToken = exports.createLoginCredentials = exports.getSigneture = exports.getSigentsureLevel = exports.virifyToken = exports.generateToken = exports.TokenTypeEnum = exports.signatureLevel = void 0;
+exports.createRevokeToken = exports.decodedToken = exports.createLoginCredentials = exports.getSigneture = exports.getSigentsureLevel = exports.virifyToken = exports.generateToken = exports.FlagEnum = exports.TokenTypeEnum = exports.signatureLevel = void 0;
 const user_model_1 = require("./../../DB/Models/user.model");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const user_model_2 = require("../../DB/Models/user.model");
 const uuid_1 = require("uuid");
 const error_res_1 = require("../Responsive/error.res");
 const user_repository_1 = require("../../DB/Repository/user.repository");
+const token_repository_1 = require("../../DB/Repository/token.repository");
+const token_model_1 = require("../../DB/Models/token.model");
 var signatureLevel;
 (function (signatureLevel) {
     signatureLevel["USER"] = "USER";
@@ -17,6 +19,11 @@ var TokenTypeEnum;
     TokenTypeEnum["ACCESS"] = "ACCESS";
     TokenTypeEnum["REFRESH"] = "REFRESH";
 })(TokenTypeEnum || (exports.TokenTypeEnum = TokenTypeEnum = {}));
+var FlagEnum;
+(function (FlagEnum) {
+    FlagEnum["ONLY"] = "ONLY";
+    FlagEnum["ALL"] = "ALL";
+})(FlagEnum || (exports.FlagEnum = FlagEnum = {}));
 const generateToken = async ({ payload, secret, options, }) => {
     return await (0, jsonwebtoken_1.sign)(payload, secret, options);
 };
@@ -77,6 +84,7 @@ const createLoginCredentials = async (user) => {
 exports.createLoginCredentials = createLoginCredentials;
 const decodedToken = async (authorization, tokenType = TokenTypeEnum.ACCESS) => {
     const usermodel = new user_repository_1.userRepository(user_model_1.userModel);
+    const tokenModel = new token_repository_1.TokenRepository(token_model_1.TokenModel);
     const [bearer, token] = authorization.split(" ");
     if (!bearer || !token)
         throw new error_res_1.UnauthorizedException("Missing Token parts");
@@ -89,9 +97,27 @@ const decodedToken = async (authorization, tokenType = TokenTypeEnum.ACCESS) => 
     });
     if (!decoded?._id || !decoded.iat)
         throw new error_res_1.UnauthorizedException("Inavlid payloud token");
+    if (await tokenModel.findOne({ filter: { jti: decoded.jti } }))
+        throw new error_res_1.BadRequestException("Invalid or old login credentials");
     const user = await usermodel.findById({ id: decoded._id });
     if (!user)
         throw new error_res_1.NotFoundException("User not founded");
+    if (user.changeCredientialTime?.getTime() || 0 > decoded.iat * 1000)
+        throw new error_res_1.UnauthorizedException("Logout from all devices");
     return { user, decoded };
 };
 exports.decodedToken = decodedToken;
+const createRevokeToken = async (decoded) => {
+    const tokenModel = new token_repository_1.TokenRepository(token_model_1.TokenModel);
+    const [result] = (await tokenModel.create({
+        data: [
+            {
+                jti: decoded.jti,
+                expiresIn: decoded.iat,
+                userId: decoded._id,
+            },
+        ],
+    })) || [];
+    return result;
+};
+exports.createRevokeToken = createRevokeToken;

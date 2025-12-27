@@ -44,3 +44,8 @@ export const requestOtpSchema = {
     email: generaFeild.email,
   }),
 };
+export const logOutSchema = {
+  body: z.strictObject({
+    flag: generaFeild.flag,
+  }),
+};

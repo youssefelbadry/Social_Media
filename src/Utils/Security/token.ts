@@ -3,10 +3,13 @@ import { sign, verify, Secret, SignOptions, JwtPayload } from "jsonwebtoken";
 import { HUserDoc, Role } from "../../DB/Models/user.model";
 import { v4 as uuid } from "uuid";
 import {
+  BadRequestException,
   NotFoundException,
   UnauthorizedException,
 } from "../Responsive/error.res";
 import { userRepository } from "../../DB/Repository/user.repository";
+import { TokenRepository } from "../../DB/Repository/token.repository";
+import { TokenModel } from "../../DB/Models/token.model";
 
 export enum signatureLevel {
   USER = "USER",
@@ -15,6 +18,10 @@ export enum signatureLevel {
 export enum TokenTypeEnum {
   ACCESS = "ACCESS",
   REFRESH = "REFRESH",
+}
+export enum FlagEnum {
+  ONLY = "ONLY",
+  ALL = "ALL",
 }
 export const generateToken = async ({
   payload,
@@ -104,6 +111,7 @@ export const decodedToken = async (
   tokenType: TokenTypeEnum = TokenTypeEnum.ACCESS
 ) => {
   const usermodel = new userRepository(userModel);
+  const tokenModel = new TokenRepository(TokenModel);
   const [bearer, token] = authorization.split(" ");
 
   if (!bearer || !token) throw new UnauthorizedException("Missing Token parts");
@@ -121,8 +129,30 @@ export const decodedToken = async (
   if (!decoded?._id || !decoded.iat)
     throw new UnauthorizedException("Inavlid payloud token");
 
+  if (await tokenModel.findOne({ filter: { jti: decoded.jti as string } }))
+    throw new BadRequestException("Invalid or old login credentials");
   const user = await usermodel.findById({ id: decoded._id });
   if (!user) throw new NotFoundException("User not founded");
 
+  if (user.changeCredientialTime?.getTime() || 0 > decoded.iat * 1000)
+    throw new UnauthorizedException("Logout from all devices");
+
   return { user, decoded };
+};
+
+export const createRevokeToken = async (decoded: JwtPayload) => {
+  const tokenModel = new TokenRepository(TokenModel);
+
+  const [result] =
+    (await tokenModel.create({
+      data: [
+        {
+          jti: decoded.jti as string,
+          expiresIn: decoded.iat as number,
+          userId: decoded._id,
+        },
+      ],
+    })) || [];
+
+  return result;
 };

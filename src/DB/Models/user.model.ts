@@ -19,13 +19,14 @@ export interface IUser {
   confirmEmailOTP?: string;
   confirmedAt?: Date;
   confirmEmailOTPExpiresAt?: Date;
+  changeCredientialTime: Date;
 
   password: string;
   resetPasswordOTP?: string;
 
   phone: string;
   address?: string;
-
+  prifileImage?: string;
   gender: GenderEnum;
   role: Role;
 
@@ -88,7 +89,7 @@ export const userSchema = new Schema<IUser>(
       },
       required: [true, "Gender is required"],
     },
-
+    prifileImage: String,
     role: {
       type: String,
       enum: {
@@ -110,6 +111,9 @@ export const userSchema = new Schema<IUser>(
     },
 
     confirmedAt: {
+      type: Date,
+    },
+    changeCredientialTime: {
       type: Date,
     },
   },
