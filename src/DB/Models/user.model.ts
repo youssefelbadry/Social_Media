@@ -1,4 +1,8 @@
 import { HydratedDocument, model, models, Schema } from "mongoose";
+import { BadRequestException } from "../../Utils/Responsive/error.res";
+import { NextFunction } from "express";
+import { generateHash } from "../../Utils/Security/hash";
+import { emailEvent } from "../../Utils/Events/email.event";
 
 export enum GenderEnum {
   MALE = "MALE",
@@ -14,6 +18,7 @@ export interface IUser {
   firstName: string;
   lastName: string;
   username: string;
+  slug: string;
 
   email: string;
   confirmEmailOTP?: string;
@@ -32,6 +37,7 @@ export interface IUser {
 
   createdAt: Date;
   updatedAt?: Date;
+  otp?: string;
 }
 
 export const userSchema = new Schema<IUser>(
@@ -48,6 +54,12 @@ export const userSchema = new Schema<IUser>(
       required: [true, "Last name is required"],
       trim: true,
       minlength: [2, "Last name must be at least 2 characters"],
+    },
+    slug: {
+      type: String,
+      required: [true, "Last name is required"],
+      trim: true,
+      minlength: [5, "Last name must be at least 2 characters"],
     },
 
     email: {
@@ -121,18 +133,50 @@ export const userSchema = new Schema<IUser>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  }
+  },
 );
 
 userSchema
   .virtual("username")
   .set(function (value) {
     const [firstName, lastName] = value.split(" ") || [];
-    this.set({ firstName, lastName });
+    this.set({ firstName, lastName, slug: value.replaceAll(/\s+/g, "-") });
   })
   .get(function () {
     return `${this.firstName} ${this.lastName}`;
   });
+
+// userSchema.pre("validate", function (next) {
+//   console.log("pre hook", this);
+//   if (!this.slug?.includes("-")) {
+//     throw new BadRequestException("Slug is required or - is required");
+//   }
+//   next();
+// });
+
+// userSchema.pre(
+//   "save",
+//   async function (this: HUserDoc & { wasNew: boolean }, next) {
+//     this.wasNew = this.wasNew;
+
+//     console.log("pre hook", this.wasNew);
+//     if (!this.isModified("password")) {
+//       this.password = await generateHash(this.password);
+//     }
+//     next();
+//   },
+// );
+
+// userSchema.post("save", async function (doc, next) {
+//   const that = this as unknown as HUserDoc & { wasNew: boolean };
+//   if (that.wasNew) {
+//     emailEvent.emit("confirmEmail", {
+//       to: this.email,
+//       otp: this.confirmEmailOTP,
+//     });
+//   }
+//   next();
+// });
 
 export const userModel = models.user || model("User", userSchema);
 export type HUserDoc = HydratedDocument<IUser>;

@@ -8,13 +8,15 @@ import {
   filterFile,
   storgeFilter,
 } from "../../Utils/Multer/cloud.multer";
+import s3CinfigService from "../../Utils/Multer/s3.config.service";
+
 const authentication = new AuthenticationMiddleware();
 const router: Router = Router();
 
 router.get(
   "/getProfile",
   authentication.authenticate(TokenTypeEnum.ACCESS, [Role.USER]),
-  userService.getProfile
+  userService.getProfile,
 );
 router.patch(
   "/profileImage",
@@ -24,7 +26,7 @@ router.patch(
     storgeApproch: storgeFilter.MEMORY,
     maxSizeMB: 2,
   }).single("attachment"),
-  userService.profileImage
+  userService.profileImage,
 );
 router.patch(
   "/coverImage",
@@ -34,7 +36,11 @@ router.patch(
     storgeApproch: storgeFilter.MEMORY,
     maxSizeMB: 2,
   }).single("attachment"),
-  userService.coverImage
+  userService.coverImage,
 );
+router.get("uploads/pre-signed/*path", s3CinfigService.getsignedFile);
+router.get("uploads/*path", s3CinfigService.getFileConfig);
+router.delete("deleteFile", s3CinfigService.deleteFile);
+router.delete("deleteFiles", s3CinfigService.deleteFiles);
 
 export default router;

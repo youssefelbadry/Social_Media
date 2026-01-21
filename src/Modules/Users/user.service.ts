@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
-import { uploadFile, uploadFiles } from "../../Utils/Multer/s3.congig";
+import {
+  createPresignedUrl,
+  uploadFile,
+  uploadFiles,
+} from "../../Utils/Multer/s3.congig";
 import { userRepository } from "../../DB/Repository/user.repository";
 import { userModel } from "../../DB/Models/user.model";
 
@@ -15,10 +19,20 @@ class UserService {
     });
   };
   profileImage = async (req: Request, res: Response) => {
-    const key = await uploadFile({
+    const {
+      ContentType,
+      originalName,
+    }: { ContentType: string; originalName: string } = req.body;
+
+    const { url, key } = await createPresignedUrl({
+      ContentType,
+      originalName,
       path: `users/${req.decoded?._id}`,
-      file: req.file as Express.Multer.File,
     });
+    // const key = await uploadFile({
+    //   path: `users/${req.decoded?._id}`,
+    //   file: req.file as Express.Multer.File,
+    // });
 
     await this._userModel.updateOne({
       filter: req.decoded?._id,
