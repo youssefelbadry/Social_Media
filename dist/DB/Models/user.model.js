@@ -25,6 +25,12 @@ exports.userSchema = new mongoose_1.Schema({
         trim: true,
         minlength: [2, "Last name must be at least 2 characters"],
     },
+    slug: {
+        type: String,
+        required: [true, "Last name is required"],
+        trim: true,
+        minlength: [5, "Last name must be at least 2 characters"],
+    },
     email: {
         type: String,
         required: [true, "Email is required"],
@@ -60,6 +66,7 @@ exports.userSchema = new mongoose_1.Schema({
         },
         required: [true, "Gender is required"],
     },
+    prifileImage: String,
     role: {
         type: String,
         enum: {
@@ -92,7 +99,7 @@ exports.userSchema
     .virtual("username")
     .set(function (value) {
     const [firstName, lastName] = value.split(" ") || [];
-    this.set({ firstName, lastName });
+    this.set({ firstName, lastName, slug: value.replaceAll(/\s+/g, "-") });
 })
     .get(function () {
     return `${this.firstName} ${this.lastName}`;

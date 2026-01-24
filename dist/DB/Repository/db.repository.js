@@ -26,5 +26,8 @@ class DataBaseRepository {
     async updateOne({ filter, update, options, }) {
         return await this.model.updateOne(filter, { ...update, $inc: { _v: 1 } }, options);
     }
+    async findOneAndUpdate({ filter, update, options, }) {
+        return await this.model.findOneAndUpdate(filter, { ...update, $inc: { _v: 1 } }, { new: true, ...options });
+    }
 }
 exports.DataBaseRepository = DataBaseRepository;

@@ -2,6 +2,7 @@ import express from "express";
 import type { Express, Request, Response } from "express";
 import authRouter from "./Modules/Auth/auth.controller";
 import userRouter from "./Modules/Users/user.controller";
+import postRouter from "./Modules/Posts/post.controller";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
 import helmet from "helmet";
@@ -27,19 +28,20 @@ const bootstrab = async () => {
   app.use(limit);
   await connectDB();
 
-  try {
-    const user = new userModel({
-      username: "test",
-      email: `${Date.now()}@email.com`,
-      password: "123456",
-    });
-    await user.save();
-  } catch (error) {
-    console.log(error);
-  }
+  // try {
+  //   const user = new userModel({
+  //     username: "test",
+  //     email: `${Date.now()}@email.com`,
+  //     password: "123456",
+  //   });
+  //   await user.save();
+  // } catch (error) {
+  //   console.log(error);
+  // }
 
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/users", userRouter);
+  app.use("/api/v1/posts", postRouter);
 
   app.use("{/dummy}", (req: Request, res: Response) => {
     res.status(404).json({ message: "not founded" });

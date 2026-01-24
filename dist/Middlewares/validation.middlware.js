@@ -64,6 +64,7 @@ const validation = (schema) => {
 };
 exports.validation = validation;
 exports.generaFeild = {
+    id: z.string(),
     username: z
         .string()
         .min(3, { error: "Username must be at leasat 3 cahracter long" })

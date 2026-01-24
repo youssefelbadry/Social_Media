@@ -67,7 +67,23 @@ export abstract class DataBaseRepository<TModel> {
     return await this.model.updateOne(
       filter,
       { ...update, $inc: { _v: 1 } },
-      options
+      options,
+    );
+  }
+
+  async findOneAndUpdate({
+    filter,
+    update,
+    options,
+  }: {
+    filter: QueryFilter<TModel>;
+    update: UpdateQuery<TModel> | null;
+    options?: QueryOptions<TModel> | null;
+  }) {
+    return await this.model.findOneAndUpdate(
+      filter,
+      { ...update, $inc: { _v: 1 } },
+      { new: true, ...options },
     );
   }
 }
