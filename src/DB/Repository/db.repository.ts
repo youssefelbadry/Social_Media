@@ -39,6 +39,55 @@ export abstract class DataBaseRepository<TModel> {
     }
     return await doc.exec();
   }
+  async find({
+    filter,
+    select,
+    options,
+  }: {
+    filter?: QueryFilter<TModel>;
+    select?: ProjectionType<TModel> | null;
+    options?: QueryOptions<TModel> | null;
+  }) {
+    const doc = this.model.find(filter).select(select || "");
+    if (options?.populate) {
+      doc.populate(options.populate as PopulateOptions[]);
+    }
+    return await doc.exec();
+  }
+  async pagination({
+    filter = {},
+    options = {},
+    select = {},
+    page = 1,
+    size = 5,
+  }: {
+    filter?: QueryFilter<TModel>;
+    select?: ProjectionType<TModel> | null;
+    options?: QueryOptions<TModel> | null;
+    page: number;
+    size: number;
+  }) {
+    let docsCount: number | undefined = undefined;
+    let pages: number | undefined = undefined;
+    options = options || {};
+
+    page = Math.floor(page < 1 ? 1 : page);
+    options.limit = Math.floor(size < 1 || !size ? 5 : size);
+    options.skip = (page - 1) * options?.limit;
+    docsCount = await this.model.countDocuments(filter);
+    pages = Math.ceil(docsCount / options?.limit);
+
+    const results = await this.find({ filter, select, options });
+
+    return {
+      page,
+      size,
+      docsCount,
+      pages,
+      results,
+    };
+  }
+
   async findById({
     id,
     select,

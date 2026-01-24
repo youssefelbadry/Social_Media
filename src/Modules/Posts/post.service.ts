@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { userRepository } from "../../DB/Repository/user.repository";
 import { userModel } from "../../DB/Models/user.model";
-import { HPostDoc, postModel } from "../../DB/Models/post.model";
+import { Avaibility, HPostDoc, postModel } from "../../DB/Models/post.model";
 import { postRepository } from "../../DB/Repository/post.repository";
 import {
   BadRequestException,
@@ -88,6 +88,23 @@ class PostsService {
       likes: updated.likes,
       numLikes: updated.likes?.length,
     });
+  };
+
+  getAllPosts = async (req: Request, res: Response) => {
+    const { page, size } = req.query as unknown as {
+      page: number;
+      size: number;
+    };
+
+    const getAll = await this._postModel.pagination({
+      filter: { availability: Avaibility.PUBLIC },
+      page,
+      size,
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Posts get all successfuly", getAll });
   };
 }
 export default new PostsService();

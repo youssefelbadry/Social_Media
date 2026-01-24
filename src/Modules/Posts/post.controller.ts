@@ -27,4 +27,10 @@ router.patch(
   validation(likePostSchema),
   postService.likePost,
 );
+
+router.get(
+  "/getAllPosts",
+  authentication.authenticate(TokenTypeEnum.ACCESS, [Role.USER]),
+  postService.getAllPosts,
+);
 export default router;
