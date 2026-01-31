@@ -16,27 +16,26 @@ export class ChatService {
 
   // Rest Api
   getChat = async (req: Request, res: Response) => {
-    const { userId } = req.params as IGetChatSchema as { userId: string };
+    const { userId } = req.params as { userId: string };
 
     const chat = await this._chatModel.findOne({
       filter: {
         participants: {
-          $all: [req.user?._id, new Types.ObjectId(userId)],
+          $all: [req.user!._id, new Types.ObjectId(userId)],
         },
         groups: { $exists: false },
       },
       options: {
-        populate: [{ path: "partinars" }],
+        populate: {
+          path: "participants",
+          select: "_id profilePicture",
+        },
       },
     });
 
-    if (!chat) {
-      throw new BadRequestException("Chat not found");
-    }
-
-    res.status(200).json({
+    return res.status(200).json({
       message: "Done",
-      data: chat,
+      data: chat || null,
     });
   };
 
@@ -49,7 +48,7 @@ export class ChatService {
       socket.emit("custom_error", error);
     }
   };
-  sendMessage = async ({ content, socket, sendTo }: IsendMessageDTO) => {
+  sendMessage = async ({ content, socket, sendTo, io }: IsendMessageDTO) => {
     try {
       const createdBy = socket.Credentials?.user?._id as Types.ObjectId;
 
@@ -98,7 +97,8 @@ export class ChatService {
 
         if (!createChat) throw new BadRequestException("Fail to create chat");
       }
-      socket.emit("successMessage", { content });
+      io.emit("successMessage", { content });
+      io.emit("newMessage", { content, from: socket.Credentials?.user });
     } catch (error) {
       socket.emit("sendMessage", error);
     }

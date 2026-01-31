@@ -5,8 +5,9 @@ import { Server } from "socket.io";
 import { decodedToken, TokenTypeEnum } from "../../Utils/Security/token";
 import { IAuthSocket } from "./getway.dto";
 
+let io: Server | null = null;
 export const initialize = (httpServer: httpServer) => {
-  const io = new Server(httpServer, {
+  io = new Server(httpServer, {
     cors: {
       origin: "*",
     },
@@ -50,8 +51,15 @@ export const initialize = (httpServer: httpServer) => {
   const chatGetWay = new ChatGetWay();
   io.on("connection", (socket: IAuthSocket) => {
     console.log(connectionsSockets);
-    chatGetWay.register(socket);
+    chatGetWay.register(socket, getIo());
     console.log(`Login :: ${socket.id}`);
     disconnect(socket);
   });
+};
+
+export const getIo = (): Server => {
+  if (!io) {
+    throw new Error("Socket.io not inialized");
+  }
+  return io;
 };

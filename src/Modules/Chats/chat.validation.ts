@@ -7,3 +7,10 @@ export const getChatSchema = {
     userId: generaFeild.id,
   }),
 };
+
+export const sendMessageSchema = {
+  params: z.strictObject({
+    userId: generaFeild.id,
+  }),
+};
+

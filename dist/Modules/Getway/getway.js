@@ -1,10 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initialize = void 0;
+exports.getIo = exports.initialize = void 0;
+const chat_getway_1 = require("./../Chats/chat.getway");
 const socket_io_1 = require("socket.io");
 const token_1 = require("../../Utils/Security/token");
+let io = null;
 const initialize = (httpServer) => {
-    const io = new socket_io_1.Server(httpServer, {
+    io = new socket_io_1.Server(httpServer, {
         cors: {
             origin: "*",
         },
@@ -39,10 +41,19 @@ const initialize = (httpServer) => {
             console.log(connectionsSockets);
         });
     }
+    const chatGetWay = new chat_getway_1.ChatGetWay();
     io.on("connection", (socket) => {
         console.log(connectionsSockets);
+        chatGetWay.register(socket, (0, exports.getIo)());
         console.log(`Login :: ${socket.id}`);
         disconnect(socket);
     });
 };
 exports.initialize = initialize;
+const getIo = () => {
+    if (!io) {
+        throw new Error("Socket.io not inialized");
+    }
+    return io;
+};
+exports.getIo = getIo;
