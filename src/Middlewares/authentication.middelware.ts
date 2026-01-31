@@ -1,5 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { Role } from "../DB/Models/user.model";
+import {
+  ReasonEnum,
+  ReasonEnumAdmin,
+  ReasonEnumUser,
+  Role,
+} from "../DB/Models/user.model";
 import { decodedToken, TokenTypeEnum } from "../Utils/Security/token";
 import {
   BadRequestException,
@@ -14,7 +19,7 @@ export class AuthenticationMiddleware {
 
   authenticate(
     tokenType: TokenTypeEnum = TokenTypeEnum.ACCESS,
-    accessRole: Role[] = []
+    accessRole: Role[] = [],
   ) {
     return async (req: Request, res: Response, next: NextFunction) => {
       if (!req.headers.authorization) {
@@ -23,7 +28,7 @@ export class AuthenticationMiddleware {
 
       const { user, decoded } = await decodedToken(
         req.headers.authorization,
-        tokenType
+        tokenType,
       );
 
       if (!decoded.jti) {
@@ -40,8 +45,21 @@ export class AuthenticationMiddleware {
 
       if (accessRole.length && !accessRole.includes(user.role)) {
         throw new ForbiddenException(
-          "You are not authorized to access this resource"
+          "You are not authorized to access this resource",
         );
+      }
+
+      if (user.freezeAt) {
+        if (
+          user.freezeReason !== ReasonEnum.USER_REQUEST &&
+          user.role !== "ADMIN"
+        ) {
+          throw new ForbiddenException("Account frozen by moderation");
+        }
+
+        if (!req.path.includes("/restore")) {
+          throw new ForbiddenException("Account frozen — Restore required");
+        }
       }
 
       req.user = user;

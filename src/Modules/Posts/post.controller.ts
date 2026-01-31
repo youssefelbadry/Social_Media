@@ -33,4 +33,15 @@ router.get(
   authentication.authenticate(TokenTypeEnum.ACCESS, [Role.USER]),
   postService.getAllPosts,
 );
+
+router.post(
+  "/:postId/freezePost",
+  authentication.authenticate(TokenTypeEnum.ACCESS, [Role.USER, Role.ADMIN]),
+  postService.freezePost,
+);
+router.post(
+  "/:postId/restorePost",
+  authentication.authenticate(TokenTypeEnum.ACCESS, [Role.USER, Role.ADMIN]),
+  postService.restorePost,
+);
 export default router;

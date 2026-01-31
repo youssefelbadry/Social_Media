@@ -21,4 +21,5 @@ router.post("/", authentication.authenticate(token_1.TokenTypeEnum.ACCESS, [user
 router.patch("/:commentId/likeComment", authentication.authenticate(token_1.TokenTypeEnum.ACCESS, [user_model_1.Role.USER]), (0, validation_middlware_1.validation)(comment_validation_1.likeCommentSchema), (0, cloud_multer_1.cloufFileUploud)({
     validation: [...cloud_multer_1.filterFile.image],
 }).single("attachment"), comment_service_1.default.likeComment);
+router.delete("/:commentId/softDeletecomment", authentication.authenticate(token_1.TokenTypeEnum.ACCESS, [user_model_1.Role.USER, user_model_1.Role.ADMIN]), comment_service_1.default.softDeletecomment);
 exports.default = router;

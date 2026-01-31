@@ -19,4 +19,7 @@ router.post("/createPost", authentication.authenticate(token_1.TokenTypeEnum.ACC
     validation: [...cloud_multer_1.filterFile.image],
 }).single("attachment"), post_service_1.default.createPost);
 router.patch("/:postId/like", authentication.authenticate(token_1.TokenTypeEnum.ACCESS, [user_model_1.Role.USER]), (0, validation_middlware_1.validation)(post_validation_1.likePostSchema), post_service_1.default.likePost);
+router.get("/getAllPosts", authentication.authenticate(token_1.TokenTypeEnum.ACCESS, [user_model_1.Role.USER]), post_service_1.default.getAllPosts);
+router.post("/:postId/freezePost", authentication.authenticate(token_1.TokenTypeEnum.ACCESS, [user_model_1.Role.USER, user_model_1.Role.ADMIN]), post_service_1.default.freezePost);
+router.post("/:postId/restorePost", authentication.authenticate(token_1.TokenTypeEnum.ACCESS, [user_model_1.Role.USER, user_model_1.Role.ADMIN]), post_service_1.default.restorePost);
 exports.default = router;

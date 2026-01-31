@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postModel = exports.postSchema = exports.LikesUNLikes = exports.AllowedComments = exports.Avaibility = exports.AlLowedComments = void 0;
 const mongoose_1 = require("mongoose");
+const user_model_1 = require("./user.model");
 var AlLowedComments;
 (function (AlLowedComments) {
     AlLowedComments["ALLOW"] = "ALLOW";
@@ -71,11 +72,24 @@ exports.postSchema = new mongoose_1.Schema({
     freezeAt: {
         type: Date,
     },
+    freezeReason: {
+        type: String,
+        enum: Object.values(user_model_1.ReasonEnum),
+    },
     restoreBy: {
         type: mongoose_1.Types.ObjectId,
         ref: "User",
     },
     restoreAt: {
+        type: Date,
+    },
+    deletedBy: [
+        {
+            type: mongoose_1.Types.ObjectId,
+            ref: "User",
+        },
+    ],
+    deletedAt: {
         type: Date,
     },
 }, {

@@ -6,11 +6,8 @@ const error_res_1 = require("../../Utils/Responsive/error.res");
 const user_repository_1 = require("../../DB/Repository/user.repository");
 const generateOtp_1 = require("../../Utils/Security/generateOtp");
 const hash_1 = require("../../Utils/Security/hash");
-const token_repository_1 = require("../../DB/Repository/token.repository");
-const token_model_1 = require("../../DB/Models/token.model");
 class AuthentcationService {
     _userModel = new user_repository_1.userRepository(user_model_1.userModel);
-    _tokenModel = new token_repository_1.TokenRepository(token_model_1.TokenModel);
     constructor() { }
     signup = async (req, res) => {
         const { username, email, password, gender, phone } = req.body;

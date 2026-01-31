@@ -19,6 +19,9 @@ export interface IComment {
   freezeBy?: Types.ObjectId;
   freezeAt?: Date;
 
+  deletedBy?: Types.ObjectId[];
+  deletedAt?: Date | Number | any;
+
   restoreBy?: Types.ObjectId;
   restoreAt?: Date;
 }

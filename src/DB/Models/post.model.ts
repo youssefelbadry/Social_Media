@@ -1,4 +1,5 @@
 import { HydratedDocument, model, models, Schema, Types } from "mongoose";
+import { ReasonEnum, ReasonEnumAdmin , ReasonEnumUser } from "./user.model";
 
 export enum AlLowedComments {
   ALLOW = "ALLOW",
@@ -33,6 +34,10 @@ export interface IPost {
 
   freezeBy?: Types.ObjectId;
   freezeAt?: Date;
+  freezeReason?: ReasonEnum;
+
+  deletedBy?: Types.ObjectId[];
+  deletedAt?: Date | Number | any;
 
   restoreBy?: Types.ObjectId;
   restoreAt?: Date;
@@ -95,6 +100,10 @@ export const postSchema = new Schema<IPost>(
     freezeAt: {
       type: Date,
     },
+    freezeReason: {
+      type: String,
+      enum: Object.values(ReasonEnum),
+    },
 
     restoreBy: {
       type: Types.ObjectId,
@@ -102,6 +111,16 @@ export const postSchema = new Schema<IPost>(
     },
 
     restoreAt: {
+      type: Date,
+    },
+    deletedBy: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    deletedAt: {
       type: Date,
     },
   },

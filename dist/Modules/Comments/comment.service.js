@@ -76,5 +76,55 @@ class UserService {
             numLikes: updated.likes?.length,
         });
     };
+    softDeletecomment = async (req, res) => {
+        const { commentId } = req.params;
+        const comment = await this._commenetModel.findById({ id: commentId });
+        if (!comment)
+            throw new error_res_1.NotFoundException("comment not found");
+        const isOwner = comment.createdBy.toString() === req.user?._id.toString();
+        const isAdmin = req.user?.role === user_model_1.Role.ADMIN;
+        if (!isOwner && !isAdmin) {
+            throw new error_res_1.ForbiddenException("You are not allowed to delete this comment");
+        }
+        if (comment.deletedAt) {
+            throw new error_res_1.BadRequestException("comment already deleted");
+        }
+        const deleted = await this._commenetModel.findOneAndUpdate({
+            filter: { _id: commentId },
+            update: {
+                deletedBy: req.user?._id,
+                deletedAt: new Date(),
+            },
+            options: { new: true },
+        });
+        return res.status(200).json({
+            message: isOwner
+                ? "You deleted your comment"
+                : "Admin deleted the comment",
+            comment: deleted,
+        });
+    };
+    harftDeleteComment = async (req, res) => {
+        const { commentId } = req.params;
+        const comment = await this._commenetModel.findOne({
+            filter: {
+                _id: commentId,
+                deletedAt: { $exists: true, $ne: null },
+            },
+        });
+        if (!comment)
+            throw new error_res_1.NotFoundException("Comment not found");
+        const isAdmin = req.user?.role === user_model_1.Role.ADMIN;
+        if (!isAdmin)
+            throw new error_res_1.ForbiddenException("Admins only");
+        const DAYS_30 = 30 * 24 * 60 * 60 * 1000;
+        const diff = Date.now() - comment.deletedAt.getTime();
+        if (diff < DAYS_30)
+            throw new error_res_1.BadRequestException("Cannot hard delete yet");
+        await this._commenetModel.hardDelete({ id: commentId });
+        return res.status(200).json({
+            message: "Comment permanently deleted",
+        });
+    };
 }
 exports.default = new UserService();

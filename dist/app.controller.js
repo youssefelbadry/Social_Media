@@ -14,6 +14,7 @@ const node_path_1 = __importDefault(require("node:path"));
 const dotenv_1 = require("dotenv");
 const error_res_1 = require("./Utils/Responsive/error.res");
 const connection_1 = __importDefault(require("./DB/connection"));
+const getway_1 = require("./Modules/Getway/getway");
 (0, dotenv_1.config)({ path: node_path_1.default.resolve("./config/.env.dev") });
 const limit = (0, express_rate_limit_1.default)({
     windowMs: 15 * 60 * 1000,
@@ -35,9 +36,10 @@ const bootstrab = async () => {
     app.use("{/dummy}", (req, res) => {
         res.status(404).json({ message: "not founded" });
     });
-    app.listen(port, () => {
+    app.use(error_res_1.globalErrorHandling);
+    const httpServer = app.listen(port, () => {
         console.log(`Server is running om http://localhost:${port}`);
     });
-    app.use(error_res_1.globalErrorHandling);
+    (0, getway_1.initialize)(httpServer);
 };
 exports.default = bootstrab;

@@ -29,4 +29,11 @@ router.patch(
   }).single("attachment"),
   commentService.likeComment,
 );
+
+router.delete(
+  "/:commentId/softDeletecomment",
+  authentication.authenticate(TokenTypeEnum.ACCESS, [Role.USER, Role.ADMIN]),
+  commentService.softDeletecomment,
+);
+
 export default router;

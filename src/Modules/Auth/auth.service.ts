@@ -6,7 +6,7 @@ import {
 } from "./../../Utils/Security/token";
 import { GenderEnum, IUser, userModel } from "./../../DB/Models/user.model";
 import { Request, Response } from "express";
-import { Types, UpdateQuery } from "mongoose";
+import { UpdateQuery } from "mongoose";
 
 import {
   IConfirmEmailDTO,
@@ -22,12 +22,16 @@ import {
 import { userRepository } from "../../DB/Repository/user.repository";
 import { emailService, Otp } from "../../Utils/Security/generateOtp";
 import { compareHash, generateHash } from "../../Utils/Security/hash";
-import { TokenRepository } from "../../DB/Repository/token.repository";
-import { TokenModel } from "../../DB/Models/token.model";
+// import { postRepository } from "../../DB/Repository/post.repository";
+// import { postModel } from "../../DB/Models/post.model";
+// import { TokenRepository } from "../../DB/Repository/token.repository";
+// import { TokenModel } from "../../DB/Models/token.model";
 
 class AuthentcationService {
   private _userModel = new userRepository(userModel);
-  private _tokenModel = new TokenRepository(TokenModel);
+  // private _tokenModel = new TokenRepository(TokenModel);
+  // private _postModel = new postRepository(postModel);
+
   constructor() {}
 
   //SIGNUP=========================================================

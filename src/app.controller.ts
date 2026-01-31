@@ -10,7 +10,7 @@ import path from "node:path";
 import { config } from "dotenv";
 import { globalErrorHandling } from "./Utils/Responsive/error.res";
 import connectDB from "./DB/connection";
-import { userModel } from "./DB/Models/user.model";
+import { initialize } from "./Modules/Getway/getway";
 
 config({ path: path.resolve("./config/.env.dev") });
 const limit = rateLimit({
@@ -28,17 +28,6 @@ const bootstrab = async () => {
   app.use(limit);
   await connectDB();
 
-  // try {
-  //   const user = new userModel({
-  //     username: "test",
-  //     email: `${Date.now()}@email.com`,
-  //     password: "123456",
-  //   });
-  //   await user.save();
-  // } catch (error) {
-  //   console.log(error);
-  // }
-
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/users", userRouter);
   app.use("/api/v1/posts", postRouter);
@@ -46,11 +35,14 @@ const bootstrab = async () => {
   app.use("{/dummy}", (req: Request, res: Response) => {
     res.status(404).json({ message: "not founded" });
   });
-  app.listen(port, () => {
+
+  app.use(globalErrorHandling);
+
+  const httpServer = app.listen(port, () => {
     console.log(`Server is running om http://localhost:${port}`);
   });
 
-  app.use(globalErrorHandling);
+  initialize(httpServer);
 };
 
 export default bootstrab;

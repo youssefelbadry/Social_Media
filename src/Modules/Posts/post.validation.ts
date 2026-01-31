@@ -2,7 +2,6 @@ import * as z from "zod";
 
 import { Types } from "mongoose";
 import { generaFeild } from "../../Middlewares/validation.middlware";
-import { LikesUNLikes } from "../../DB/Models/post.model";
 
 export const createPostSchema = {
   body: z

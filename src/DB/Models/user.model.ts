@@ -1,8 +1,8 @@
-import { HydratedDocument, model, models, Schema } from "mongoose";
-import { BadRequestException } from "../../Utils/Responsive/error.res";
-import { NextFunction } from "express";
-import { generateHash } from "../../Utils/Security/hash";
-import { emailEvent } from "../../Utils/Events/email.event";
+import { HydratedDocument, model, models, Schema, Types } from "mongoose";
+// import { BadRequestException } from "../../Utils/Responsive/error.res";
+// import { NextFunction } from "express";
+// import { generateHash } from "../../Utils/Security/hash";
+// import { emailEvent } from "../../Utils/Events/email.event";
 
 export enum GenderEnum {
   MALE = "MALE",
@@ -12,8 +12,31 @@ export enum Role {
   USER = "USER",
   ADMIN = "ADMIN",
 }
+export enum ReasonEnumAdmin {
+  SPAM = "SPAM",
+  HARASSMENT = "HARASSMENT",
+  HATE_SPEECH = "HATE_SPEECH",
+  NUDITY = "NUDITY",
+  SCAM = "SCAM",
+  ADMIN_ACTION = "ADMIN_ACTION",
+  includes = "includes",
+}
+
+export enum ReasonEnumUser {
+  USER_REQUEST = "USER_REQUEST",
+}
+export enum ReasonEnum {
+  SPAM = "SPAM",
+  HARASSMENT = "HARASSMENT",
+  HATE_SPEECH = "HATE_SPEECH",
+  NUDITY = "NUDITY",
+  SCAM = "SCAM",
+  ADMIN_ACTION = "ADMIN_ACTION",
+  USER_REQUEST = "USER_REQUEST",
+  includes = "includes",
+}
 export interface IUser {
-  _id: string;
+  _id: Types.ObjectId;
 
   firstName: string;
   lastName: string;
@@ -34,6 +57,18 @@ export interface IUser {
   prifileImage?: string;
   gender: GenderEnum;
   role: Role;
+
+  followers?: Types.ObjectId[];
+  following?: Types.ObjectId[];
+
+  friends?: Types.ObjectId[];
+
+  freezeBy?: Types.ObjectId[];
+  freezeAt?: Date;
+  freezeReason?: ReasonEnum;
+
+  restoredBy?: Types.ObjectId[];
+  restoredAt?: Date;
 
   createdAt: Date;
   updatedAt?: Date;
@@ -111,6 +146,52 @@ export const userSchema = new Schema<IUser>(
       default: Role.USER,
     },
 
+    followers: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    following: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    friends: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    freezeBy: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    freezeAt: {
+      type: Date,
+    },
+
+    freezeReason: {
+      type: String,
+      enum: Object.values(ReasonEnum),
+    },
+
+    restoredBy: [
+      {
+        type: Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    restoredAt: {
+      type: Date,
+    },
+
     confirmEmailOTP: {
       type: String,
     },
@@ -145,38 +226,6 @@ userSchema
   .get(function () {
     return `${this.firstName} ${this.lastName}`;
   });
-
-// userSchema.pre("validate", function (next) {
-//   console.log("pre hook", this);
-//   if (!this.slug?.includes("-")) {
-//     throw new BadRequestException("Slug is required or - is required");
-//   }
-//   next();
-// });
-
-// userSchema.pre(
-//   "save",
-//   async function (this: HUserDoc & { wasNew: boolean }, next) {
-//     this.wasNew = this.wasNew;
-
-//     console.log("pre hook", this.wasNew);
-//     if (!this.isModified("password")) {
-//       this.password = await generateHash(this.password);
-//     }
-//     next();
-//   },
-// );
-
-// userSchema.post("save", async function (doc, next) {
-//   const that = this as unknown as HUserDoc & { wasNew: boolean };
-//   if (that.wasNew) {
-//     emailEvent.emit("confirmEmail", {
-//       to: this.email,
-//       otp: this.confirmEmailOTP,
-//     });
-//   }
-//   next();
-// });
 
 export const userModel = models.user || model("User", userSchema);
 export type HUserDoc = HydratedDocument<IUser>;

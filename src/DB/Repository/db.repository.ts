@@ -135,4 +135,8 @@ export abstract class DataBaseRepository<TModel> {
       { new: true, ...options },
     );
   }
+
+  async hardDelete({ id }: { id: string }) {
+    return await this.model.findByIdAndDelete(id);
+  }
 }
