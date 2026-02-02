@@ -97,8 +97,28 @@ export class ChatService {
 
         if (!createChat) throw new BadRequestException("Fail to create chat");
       }
-      io.emit("successMessage", { content });
-      io.emit("newMessage", { content, from: socket.Credentials?.user });
+
+      const sender = await this._userModel.findOne({
+        filter: { _id: createdBy },
+      });
+
+      socket.emit("successMessage", {
+        content,
+        createdBy: {
+          _id: createdBy,
+          username: socket.Credentials?.user?.username,
+          // profilePicture: socket.Credentials.user.profilePicture,
+        },
+      });
+
+      io.emit("newMessage", {
+        content,
+        createdBy: {
+          _id: createdBy,
+          username: sender?.username,
+          // profilePicture: sender?.profilePicture,
+        },
+      });
     } catch (error) {
       socket.emit("sendMessage", error);
     }
