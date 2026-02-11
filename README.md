@@ -1,218 +1,159 @@
-📖 Project Overview
+## 📖 Project Overview
 
-A scalable and secure social media backend system built with Node.js and TypeScript.
+A scalable and secure social media backend system built with **Node.js** and **TypeScript**.
 
-✔ Authentication
-✔ Posts & Comments
-✔ Likes & Follow System
-✔ Friends System
-✔ Real-Time Chat
-✔ Freeze System
-✔ Soft Delete System
+✔ Authentication  
+✔ Posts & Comments  
+✔ Likes & Follow System  
+✔ Friends System  
+✔ Real-Time Chat  
+✔ Freeze System  
+✔ Soft Delete System  
 
-<!-- ---------------------------------------------------------------- -->
+---
 
-🛠 Tech Stack
+## 🛠 Tech Stack
 
-🔹 Node.js
+🔹 Node.js  
+🔹 Express.js  
+🔹 TypeScript  
+🔹 MongoDB (Mongoose)  
+🔹 JWT (Access & Refresh Tokens)  
+🔹 Socket.io (Real-time Chat)  
+🔹 Zod (Validation)  
+🔹 Cloudinary (File Uploads)  
+🔹 Node-cron  
 
-🔹 Express.js
+---
 
-🔹 TypeScript
+## 🔐 Authentication & Security
 
-🔹 MongoDB (Mongoose)
+✅ Register / Login  
+✅ Access & Refresh Tokens  
+✅ Token Revoke (Logout)  
+✅ Role-Based Access (USER / ADMIN)  
+✅ Password Hashing  
+✅ Token Blacklist  
+✅ Middleware Authentication  
+✅ Freeze Check Protection  
 
-🔹 JWT (Access & Refresh Tokens)
+---
 
-🔹 Socket.io (Real-time Chat)
+## 👤 User System
 
-🔹 Zod (Validation)
+✔ Follow / Unfollow  
+✔ Friend Requests  
+✔ Freeze & Restore Account  
+✔ Soft Delete  
+✔ Auto Hard Delete after 30 days  
 
-🔹 Cloudinary (File Uploads)
+---
 
-🔹 Node-cron
+## 📝 Posts System
 
-<!-- ---------------------------------------------------------------- -->
+✔ Create / Update Post  
+✔ Like / Unlike (Toggle System)  
+✔ Privacy Control (Public / Friends)  
+✔ Freeze / Restore  
+✔ Soft Delete + Auto Cleanup  
 
-🔐 Authentication & Security
+---
 
-✅ Register / Login
+## 💬 Comments System
 
-✅ Access & Refresh Tokens
+✔ Add Comment  
+✔ Like / Unlike Comment  
+✔ Soft Delete  
+✔ Admin Hard Delete  
 
-✅ Token Revoke (Logout)
+---
 
-✅ Role-Based Access (USER / ADMIN)
+## 💬 Real-Time Chat (Socket.io)
 
-✅ Password Hashing
+### 🔹 1-to-1 Chat
 
-✅ Token Blacklist
+✔ Send Message  
+✔ Auto Create Chat  
+✔ Get Chat History  
+✔ Only Friends Can Chat  
 
-✅ Middleware Authentication
+### 🔹 Group Chat
 
-✅ Freeze Check Protection
+✔ Create Group  
+✔ Add Members  
+✔ Send Group Messages  
+✔ Room-Based Messaging  
 
-<!-- ---------------------------------------------------------------- -->
+---
 
-👤 User System
+## 🧊 Freeze System
 
-✔ Follow / Unfollow
+**Applied To:**  
+🔹 Accounts  
+🔹 Posts  
 
-✔ Friend Requests
+**Freeze Reasons:**  
+USER_REQUEST  
+SPAM  
+HARASSMENT  
+HATE_SPEECH  
+SCAM  
+NUDITY  
+ADMIN_ACTION  
 
-✔ Freeze & Restore Account
+**Rules:**  
+✔ User freeze → only user restores  
+✔ Admin freeze → only admin restores  
 
-✔ Soft Delete
+---
 
-✔ Auto Hard Delete after 30 days
+## 🗑 Soft Delete & Cron System
 
-<!-- ---------------------------------------------------------------- -->
+1️⃣ Mark data as deleted  
+2️⃣ Wait 30 days  
+3️⃣ Cron job permanently deletes old data  
 
-📝 Posts System
+✔ Safe  
+✔ Controlled  
+✔ Production-style logic  
 
-✔ Create / Update Post
+---
 
-✔ Like / Unlike (Toggle System)
+## 🏗 Architecture
 
-✔ Privacy Control (Public / Friends)
+🔹 Repository Pattern  
+🔹 Service Layer Pattern  
+🔹 Middleware Architecture  
+🔹 Clean Modular Structure  
+🔹 API Versioning (/api/v1)  
 
-✔ Freeze / Restore
+---
 
-✔ Soft Delete + Auto Cleanup
+## 🎯 Advanced Backend Logic
 
-<!-- ---------------------------------------------------------------- -->
+✔ Toggle Like & Follow  
+✔ Owner vs Admin Permissions  
+✔ Secure JWT Authentication  
+✔ Real-time Socket Authentication  
+✔ Strong Validation with Zod  
+✔ Token Blacklist System  
 
-💬 Comments System
+---
 
-✔ Add Comment
+## 📈 What I Practiced
 
-✔ Like / Unlike Comment
+✔ Scalable Backend Development  
+✔ Real-Time Communication  
+✔ Secure Authentication Systems  
+✔ Database Design  
+✔ Clean Architecture  
 
-✔ Soft Delete
+---
 
-✔ Admin Hard Delete
+## 🔮 Future Improvements
 
-<!-- ---------------------------------------------------------------- -->
-
-💬 Real-Time Chat (Socket.io)
-🔹 1-to-1 Chat
-
-✔ Send Message
-
-✔ Auto Create Chat
-
-✔ Get Chat History
-
-✔ Only Friends Can Chat
-
-🔹 Group Chat
-
-✔ Create Group
-
-✔ Add Members
-
-✔ Send Group Messages
-
-✔ Room-Based Messaging
-
-<!-- ---------------------------------------------------------------- -->
-
-🧊 Freeze System
-
-Applied To:
-
-🔹 Accounts
-
-🔹 Posts
-
-Freeze Reasons:
-
-USER_REQUEST
-
-SPAM
-
-HARASSMENT
-
-HATE_SPEECH
-
-SCAM
-
-NUDITY
-
-ADMIN_ACTION
-
-Rules:
-
-✔ User freeze → only user restores
-
-✔ Admin freeze → only admin restores
-
-<!-- ---------------------------------------------------------------- -->
-
-🗑 Soft Delete & Cron System
-
-1️⃣ Mark data as deleted
-2️⃣ Wait 30 days
-3️⃣ Cron job permanently deletes old data
-
-✔ Safe
-✔ Controlled
-✔ Production-style logic
-
-<!-- ---------------------------------------------------------------- -->
-
-🏗 Architecture
-
-🔹 Repository Pattern
-
-🔹 Service Layer Pattern
-
-🔹 Middleware Architecture
-
-🔹 Clean Modular Structure
-
-🔹 API Versioning (/api/v1)
-
-<!-- ---------------------------------------------------------------- -->
-
-🎯 Advanced Backend Logic
-
-✔ Toggle Like & Follow
-
-✔ Owner vs Admin Permissions
-
-✔ Secure JWT Authentication
-
-✔ Real-time Socket Authentication
-
-✔ Strong Validation with Zod
-
-✔ Token Blacklist System
-
-<!-- ---------------------------------------------------------------- -->
-
-📈 What I Practiced
-
-✔ Scalable Backend Development
-
-✔ Real-Time Communication
-
-✔ Secure Authentication Systems
-
-✔ Database Design
-
-✔ Clean Architecture
-
-<!-- ---------------------------------------------------------------- -->
-
-🔮 Future Improvements
-
-🔹 Notifications System
-
-🔹 Stories Feature
-
-🔹 Read Receipts
-
-🔹 Pagination Improvements
-
-🔹 Performance Optimization
+🔹 Notifications System  
+🔹 Stories Feature  
+🔹 Read Receipts  
+🔹 Pagination Improvements  
+🔹 Performance Optimization  
