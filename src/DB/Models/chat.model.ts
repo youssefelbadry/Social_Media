@@ -11,7 +11,7 @@ export interface IChat {
   participants: Types.ObjectId[];
   messages: Types.ObjectId[];
 
-  groups?: string;
+  group_name?: string;
   groups_image?: string;
   roomId?: string;
 
@@ -52,7 +52,7 @@ export const chatSchema = new Schema<IChat>(
 
     messages: [messageSchema],
 
-    groups: {
+    group_name: {
       type: String,
       trim: true,
     },

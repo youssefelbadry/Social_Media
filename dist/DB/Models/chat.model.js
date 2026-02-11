@@ -27,7 +27,7 @@ exports.chatSchema = new mongoose_1.Schema({
         },
     ],
     messages: [exports.messageSchema],
-    groups: {
+    group_name: {
         type: String,
         trim: true,
     },

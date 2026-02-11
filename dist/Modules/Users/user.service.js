@@ -7,15 +7,24 @@ const error_res_1 = require("../../Utils/Responsive/error.res");
 const mongoose_1 = require("mongoose");
 const friends_repository_1 = require("../../DB/Repository/friends.repository");
 const friendReq_model_1 = require("../../DB/Models/friendReq.model");
+const chat_repository_1 = require("../../DB/Repository/chat.repository");
+const chat_model_1 = require("../../DB/Models/chat.model");
 class UserService {
     _userModel = new user_repository_1.userRepository(user_model_1.userModel);
     _friendsModel = new friends_repository_1.FriendsRepository(friendReq_model_1.friendsModel);
+    _chatModel = new chat_repository_1.chatRepository(chat_model_1.chatModel);
     constructor() { }
     getProfile = async (req, res) => {
         await req.user?.populate("friends");
+        const groups = await this._chatModel.find({
+            filter: {
+                participants: { $in: [req.user?._id] },
+                group_name: { $exists: true },
+            },
+        });
         return res.status(200).json({
             message: "Done",
-            data: { user: req.user, decoded: req.decoded },
+            data: { user: req.user, decoded: req.decoded, groups },
         });
     };
     profileImage = async (req, res) => {

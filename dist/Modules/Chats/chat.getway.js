@@ -8,6 +8,8 @@ class ChatGetWay {
     register = (socket, io) => {
         this._ChatEvent.sayHi(socket, io);
         this._ChatEvent.sendMessage(socket, io);
+        this._ChatEvent.joinRoom(socket, io);
+        this._ChatEvent.sendGroupMessage(socket, io);
     };
 }
 exports.ChatGetWay = ChatGetWay;

@@ -1,10 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import {
-  ReasonEnum,
-  ReasonEnumAdmin,
-  ReasonEnumUser,
-  Role,
-} from "../DB/Models/user.model";
+import { ReasonEnum, Role } from "../DB/Models/user.model";
 import { decodedToken, TokenTypeEnum } from "../Utils/Security/token";
 import {
   BadRequestException,

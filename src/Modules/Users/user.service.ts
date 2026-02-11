@@ -20,18 +20,28 @@ import {
 import { Types, UpdateQuery } from "mongoose";
 import { FriendsRepository } from "../../DB/Repository/friends.repository";
 import { friendsModel, FriendStatus } from "../../DB/Models/friendReq.model";
+import { chatRepository } from "../../DB/Repository/chat.repository";
+import { chatModel } from "../../DB/Models/chat.model";
 
 class UserService {
   private _userModel = new userRepository(userModel);
   private _friendsModel = new FriendsRepository(friendsModel);
+  private _chatModel = new chatRepository(chatModel);
   constructor() {}
 
   //getProfile=========================================================
   getProfile = async (req: Request, res: Response) => {
     await req.user?.populate("friends");
+
+    const groups = await this._chatModel.find({
+      filter: {
+        participants: { $in: [req.user?._id as Types.ObjectId] },
+        group_name: { $exists: true },
+      },
+    });
     return res.status(200).json({
       message: "Done",
-      data: { user: req.user, decoded: req.decoded },
+      data: { user: req.user, decoded: req.decoded, groups },
     });
   };
   profileImage = async (req: Request, res: Response) => {

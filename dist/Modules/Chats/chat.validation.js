@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMessageSchema = exports.getChatSchema = void 0;
+exports.getGroupSchema = exports.createGroubSchema = exports.sendMessageSchema = exports.getChatSchema = void 0;
 const z = __importStar(require("zod"));
 const validation_middlware_1 = require("../../Middlewares/validation.middlware");
 exports.getChatSchema = {
@@ -44,5 +44,28 @@ exports.getChatSchema = {
 exports.sendMessageSchema = {
     params: z.strictObject({
         userId: validation_middlware_1.generaFeild.id,
+    }),
+};
+exports.createGroubSchema = {
+    body: z
+        .strictObject({
+        participants: z.array(validation_middlware_1.generaFeild.id).min(2, {
+            message: "Group must contain at least 3 members",
+        }),
+        group: z.string().min(1).max(100),
+    })
+        .superRefine((data, ctx) => {
+        if (data.participants.length !== new Set(data.participants).size) {
+            ctx.addIssue({
+                code: "custom",
+                path: ["participants"],
+                message: "Please choose unique participants",
+            });
+        }
+    }),
+};
+exports.getGroupSchema = {
+    params: z.strictObject({
+        groupId: validation_middlware_1.generaFeild.id,
     }),
 };

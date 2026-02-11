@@ -15,4 +15,6 @@ const router = (0, express_1.Router)({
     mergeParams: true,
 });
 router.get("/", authentication.authenticate(token_1.TokenTypeEnum.ACCESS, [user_model_1.Role.USER, user_model_1.Role.ADMIN]), (0, validation_middlware_1.validation)(chat_validation_1.getChatSchema), chat_service_1.default.getChat);
+router.post("/createGroup", authentication.authenticate(token_1.TokenTypeEnum.ACCESS, [user_model_1.Role.USER, user_model_1.Role.ADMIN]), (0, validation_middlware_1.validation)(chat_validation_1.createGroubSchema), chat_service_1.default.createGroup);
+router.get("/:groupId/getGroup", authentication.authenticate(token_1.TokenTypeEnum.ACCESS, [user_model_1.Role.USER, user_model_1.Role.ADMIN]), (0, validation_middlware_1.validation)(chat_validation_1.getGroupSchema), chat_service_1.default.getGroup);
 exports.default = router;

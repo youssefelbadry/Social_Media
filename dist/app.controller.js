@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const auth_controller_1 = __importDefault(require("./Modules/Auth/auth.controller"));
 const user_controller_1 = __importDefault(require("./Modules/Users/user.controller"));
 const post_controller_1 = __importDefault(require("./Modules/Posts/post.controller"));
+const chat_controller_1 = __importDefault(require("./Modules/Chats/chat.controller"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
@@ -33,6 +34,7 @@ const bootstrab = async () => {
     app.use("/api/v1/auth", auth_controller_1.default);
     app.use("/api/v1/users", user_controller_1.default);
     app.use("/api/v1/posts", post_controller_1.default);
+    app.use("/api/v1/groups", chat_controller_1.default);
     app.use("{/dummy}", (req, res) => {
         res.status(404).json({ message: "not founded" });
     });

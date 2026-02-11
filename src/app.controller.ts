@@ -3,6 +3,7 @@ import type { Express, Request, Response } from "express";
 import authRouter from "./Modules/Auth/auth.controller";
 import userRouter from "./Modules/Users/user.controller";
 import postRouter from "./Modules/Posts/post.controller";
+import groupRouter from "./Modules/Chats/chat.controller";
 import rateLimit from "express-rate-limit";
 import cors from "cors";
 import helmet from "helmet";
@@ -31,6 +32,7 @@ const bootstrab = async () => {
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/users", userRouter);
   app.use("/api/v1/posts", postRouter);
+  app.use("/api/v1/groups", groupRouter);
 
   app.use("{/dummy}", (req: Request, res: Response) => {
     res.status(404).json({ message: "not founded" });
